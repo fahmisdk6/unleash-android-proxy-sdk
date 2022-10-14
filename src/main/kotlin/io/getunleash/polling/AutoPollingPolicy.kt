@@ -90,22 +90,6 @@ class AutoPollingPolicy(
         }
     }
 
-    private fun broadcastTogglesErrored(e: Exception) {
-        synchronized(errorListeners) {
-            errorListeners.forEach {
-                it.onError(e)
-            }
-        }
-    }
-
-    private fun broadcastTogglesUpdated() {
-        synchronized(listeners) {
-            listeners.forEach {
-                it.onTogglesUpdated()
-            }
-        }
-    }
-
     override fun close() {
         super.close()
         this.timer?.cancel()

@@ -74,6 +74,7 @@ abstract class RefreshPolicy(
         return this.fetcher().getTogglesAsync(context).thenAcceptAsync { response ->
             if (response.isFetched()) {
                 this.writeToggleCache(response.toggles)
+                this.broadcastTogglesUpdated()
             }
         }
     }
@@ -102,5 +103,21 @@ abstract class RefreshPolicy(
 
     fun addTogglesErroredListener(errorListener: TogglesErroredListener): Unit {
         errorListeners.add(errorListener)
+    }
+
+    protected fun broadcastTogglesErrored(e: Exception) {
+        synchronized(errorListeners) {
+            errorListeners.forEach {
+                it.onError(e)
+            }
+        }
+    }
+
+    protected fun broadcastTogglesUpdated() {
+        synchronized(listeners) {
+            listeners.forEach {
+                it.onTogglesUpdated()
+            }
+        }
     }
 }
